@@ -1,12 +1,43 @@
+import { useEffect } from "react";
 import "../App.css";
 
 function App() {
+  const loadBlockchainData = async () => {
+    // @ts-ignore
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    console.log(accounts[0]);
+  };
+
+  useEffect(() => {
+    loadBlockchainData();
+  });
+
   return (
-    <div className="App">
-      <div>
-        <h1>Hello World!</h1>
-        <p>This is some placeholder text</p>
-      </div>
+    <div>
+      {/* Navbar */}
+
+      <main className="exchange grid">
+        <section className="exchange__section--left grid">
+          {/* Markets */}
+
+          {/* Balance */}
+
+          {/* Order */}
+        </section>
+        <section className="exchange__section--right grid">
+          {/* PriceChart */}
+
+          {/* Transactions */}
+
+          {/* Trades */}
+
+          {/* OrderBook */}
+        </section>
+      </main>
+
+      {/* Alert */}
     </div>
   );
 }
