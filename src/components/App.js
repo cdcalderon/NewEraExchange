@@ -17,7 +17,7 @@ function App() {
     console.log(chainId);
 
     const token = new ethers.Contract(
-      config[chainId].Dapp,
+      config[chainId].DApp.address,
       TOKEN_ABI,
       provider
     );
