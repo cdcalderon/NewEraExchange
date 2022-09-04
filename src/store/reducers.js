@@ -49,3 +49,17 @@ export const tokens = (state = DEFAULT_TOKENS_STATE, action) => {
       return state;
   }
 };
+
+export const exchange = (state = { loaded: false, contract: {} }, action) => {
+  switch (action.type) {
+    case "EXCHANGE_LOADED":
+      return {
+        ...state,
+        loaded: true,
+        contract: action.exchange,
+      };
+
+    default:
+      return state;
+  }
+};

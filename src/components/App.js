@@ -8,6 +8,7 @@ import {
   loadNetwork,
   loadAccount,
   loadTokens,
+  loadExchange,
 } from "../store/interactions";
 
 function App() {
@@ -20,8 +21,11 @@ function App() {
 
     const DApp = config[chainId].DApp;
     const mETH = config[chainId].mETH;
+    const exchangeConfig = config[chainId].exchange;
 
     await loadTokens(provider, [DApp.address, mETH.address], dispatch);
+
+    await loadExchange(provider, exchangeConfig.address, dispatch);
   };
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import TOKEN_ABI from "../abis/Token.json";
+import EXCHANGE_ABI from "../abis/Exchange.json";
 
 export const loadProvider = (dispatch) => {
   const connection = new ethers.providers.Web3Provider(window.ethereum);
@@ -39,4 +40,11 @@ export const loadTokens = async (provider, addresses, dispatch) => {
   dispatch({ type: "TOKEN_2_LOADED", token, symbol });
 
   return token;
+};
+
+export const loadExchange = async (provider, address, dispatch) => {
+  const exchange = new ethers.Contract(address, EXCHANGE_ABI, provider);
+  dispatch({ type: "EXCHANGE_LOADED", exchange });
+
+  return exchange;
 };
