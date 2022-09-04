@@ -4,14 +4,17 @@ import { ethers } from "../../node_modules/ethers/lib/index";
 import TOKEN_ABI from "../abis/Token.json";
 import "../App.css";
 import config from "../config.json";
+import { useDispatch } from "react-redux";
 
 function App() {
+  const dispatch = useDispatch();
   const loadBlockchainData = async () => {
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
     });
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
+    dispatch({ type: "PROVIDER_LOADED", connection: provider });
     const { chainId } = await provider.getNetwork();
     console.log(accounts[0]);
     console.log(chainId);
