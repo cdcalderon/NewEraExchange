@@ -7,7 +7,7 @@ import {
   loadProvider,
   loadNetwork,
   loadAccount,
-  loadToken,
+  loadTokens,
 } from "../store/interactions";
 
 function App() {
@@ -18,7 +18,10 @@ function App() {
     const provider = loadProvider(dispatch);
     const chainId = await loadNetwork(provider, dispatch);
 
-    await loadToken(provider, config[chainId].DApp.address, dispatch);
+    const DApp = config[chainId].DApp;
+    const mETH = config[chainId].mETH;
+
+    await loadTokens(provider, [DApp.address, mETH.address], dispatch);
   };
 
   useEffect(() => {
