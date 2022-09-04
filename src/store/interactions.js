@@ -16,13 +16,17 @@ export const loadNetwork = async (provider, dispatch) => {
   return chainId;
 };
 
-export const loadAccount = async (dispatch) => {
+export const loadAccount = async (provider, dispatch) => {
   const accounts = await window.ethereum.request({
     method: "eth_requestAccounts",
   });
-  const account = ethers.utils.getAddress(accounts[0]);
 
+  const account = ethers.utils.getAddress(accounts[0]);
   dispatch({ type: "ACCOUNT_LOADED", account });
+
+  let balance = await provider.getBalance(account);
+  balance = ethers.utils.formatEther(balance);
+  dispatch({ type: "ETHER_BALANCE_LOADED", balance });
 
   return account;
 };
