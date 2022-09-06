@@ -11,7 +11,7 @@ const Markets = () => {
   const dispatch = useDispatch();
 
   const marketHandler = async (e) => {
-    await loadTokens(provider, e.target.value.split(","), dispatch);
+    loadTokens(provider, e.target.value.split(","), dispatch);
   };
 
   return (

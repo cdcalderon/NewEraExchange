@@ -1,15 +1,16 @@
 import { useSelector, useDispatch } from "react-redux";
-import logo from "../assets/logo.png";
 import Blockies from "react-blockies";
+
 import { loadAccount } from "../store/interactions";
-import eth from "../assets/eth.svg";
 import config from "../config.json";
+import logo from "../assets/logo.png";
+import eth from "../assets/eth.svg";
 
 const Navbar = () => {
   const provider = useSelector((state) => state.provider.connection);
+  const chainId = useSelector((state) => state.provider.chainId);
   const account = useSelector((state) => state.provider.account);
   const balance = useSelector((state) => state.provider.balance);
-  const chainId = useSelector((state) => state.provider.chainId);
 
   const dispatch = useDispatch();
 
@@ -61,7 +62,6 @@ const Navbar = () => {
             <small>My Balance</small>0 ETH
           </p>
         )}
-
         {account ? (
           <a
             href={

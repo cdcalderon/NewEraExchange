@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import TOKEN_ABI from "../abis/Token.json";
 import EXCHANGE_ABI from "../abis/Exchange.json";
+import TOKEN_ABI from "../abis/Token.json";
 
 export const loadProvider = (dispatch) => {
   const connection = new ethers.providers.Web3Provider(window.ethereum);
@@ -20,12 +20,13 @@ export const loadAccount = async (provider, dispatch) => {
   const accounts = await window.ethereum.request({
     method: "eth_requestAccounts",
   });
-
   const account = ethers.utils.getAddress(accounts[0]);
+
   dispatch({ type: "ACCOUNT_LOADED", account });
 
   let balance = await provider.getBalance(account);
   balance = ethers.utils.formatEther(balance);
+
   dispatch({ type: "ETHER_BALANCE_LOADED", balance });
 
   return account;
@@ -34,7 +35,6 @@ export const loadAccount = async (provider, dispatch) => {
 export const loadTokens = async (provider, addresses, dispatch) => {
   let token, symbol;
 
-  console.log(addresses);
   token = new ethers.Contract(addresses[0], TOKEN_ABI, provider);
   symbol = await token.symbol();
   dispatch({ type: "TOKEN_1_LOADED", token, symbol });
@@ -55,6 +55,10 @@ export const loadExchange = async (provider, address, dispatch) => {
 
 export const subscribeToEvents = (exchange, dispatch) => {
   exchange.on("Deposit", (token, user, amount, balance, event) => {
+    dispatch({ type: "TRANSFER_SUCCESS", event });
+  });
+
+  exchange.on("Withdraw", (token, user, amount, balance, event) => {
     dispatch({ type: "TRANSFER_SUCCESS", event });
   });
 };
@@ -101,17 +105,22 @@ export const transferTokens = async (
   dispatch({ type: "TRANSFER_REQUEST" });
 
   try {
-    const signer = await provider.getSigner(); //Wallet
-    const amountToTransfer = ethers.utils.parseUnits(amount.toString(), 18); // with strip decimal places
+    const signer = await provider.getSigner();
+    const amountToTransfer = ethers.utils.parseUnits(amount.toString(), 18);
 
-    transaction = await token
-      .connect(signer)
-      .approve(exchange.address, amountToTransfer);
-    await transaction.wait();
-
-    transaction = await exchange
-      .connect(signer)
-      .depositToken(token.address, amountToTransfer);
+    if (transferType === "Deposit") {
+      transaction = await token
+        .connect(signer)
+        .approve(exchange.address, amountToTransfer);
+      await transaction.wait();
+      transaction = await exchange
+        .connect(signer)
+        .depositToken(token.address, amountToTransfer);
+    } else {
+      transaction = await exchange
+        .connect(signer)
+        .withdrawToken(token.address, amountToTransfer);
+    }
 
     await transaction.wait();
   } catch (error) {

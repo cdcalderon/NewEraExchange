@@ -1,5 +1,5 @@
-import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import dapp from "../assets/dapp.svg";
 import eth from "../assets/eth.svg";
@@ -7,9 +7,9 @@ import eth from "../assets/eth.svg";
 import { loadBalances, transferTokens } from "../store/interactions";
 
 const Balance = () => {
+  const [isDeposit, setIsDeposit] = useState(true);
   const [token1TransferAmount, setToken1TransferAmount] = useState(0);
   const [token2TransferAmount, setToken2TransferAmount] = useState(0);
-  const [isDeposit, setIsDeposit] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -28,6 +28,18 @@ const Balance = () => {
 
   const depositRef = useRef(null);
   const withdrawRef = useRef(null);
+
+  const tabHandler = (e) => {
+    if (e.target.className !== depositRef.current.className) {
+      e.target.className = "tab tab--active";
+      depositRef.current.className = "tab";
+      setIsDeposit(false);
+    } else {
+      e.target.className = "tab tab--active";
+      withdrawRef.current.className = "tab";
+      setIsDeposit(true);
+    }
+  };
 
   const amountHandler = (e, token) => {
     if (token.address === tokens[0].address) {
@@ -63,24 +75,39 @@ const Balance = () => {
     }
   };
 
-  const tabHandler = (e) => {
-    if (e.target.className !== depositRef.current.className) {
-      e.target.className = "tab tab--active";
-      depositRef.current.className = "tab";
-      setIsDeposit(false);
+  const withdrawHandler = (e, token) => {
+    e.preventDefault();
+
+    if (token.address === tokens[0].address) {
+      transferTokens(
+        provider,
+        exchange,
+        "Withdraw",
+        token,
+        token1TransferAmount,
+        dispatch
+      );
+      setToken1TransferAmount(0);
     } else {
-      e.target.className = "tab tab--active";
-      withdrawRef.current.className = "tab";
-      setIsDeposit(true);
+      transferTokens(
+        provider,
+        exchange,
+        "Withdraw",
+        token,
+        token2TransferAmount,
+        dispatch
+      );
+      setToken2TransferAmount(0);
     }
+
+    console.log("withrawing tokens...");
   };
 
   useEffect(() => {
     if (exchange && tokens[0] && tokens[1] && account) {
       loadBalances(exchange, tokens, account, dispatch);
     }
-  }, [exchange, tokens, account, transferInProgress, dispatch]);
-  // in any of these change trigger again
+  }, [exchange, tokens, account, transferInProgress]);
 
   return (
     <div className="component exchange__transfers">
@@ -122,7 +149,13 @@ const Balance = () => {
           </p>
         </div>
 
-        <form onSubmit={(e) => depositHandler(e, tokens[0])}>
+        <form
+          onSubmit={
+            isDeposit
+              ? (e) => depositHandler(e, tokens[0])
+              : (e) => withdrawHandler(e, tokens[0])
+          }
+        >
           <label htmlFor="token0">{symbols && symbols[0]} Amount</label>
           <input
             type="text"
@@ -162,7 +195,13 @@ const Balance = () => {
           </p>
         </div>
 
-        <form onSubmit={(e) => depositHandler(e, tokens[1])}>
+        <form
+          onSubmit={
+            isDeposit
+              ? (e) => depositHandler(e, tokens[1])
+              : (e) => withdrawHandler(e, tokens[1])
+          }
+        >
           <label htmlFor="token1"></label>
           <input
             type="text"

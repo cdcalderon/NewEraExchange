@@ -35,7 +35,6 @@ const DEFAULT_TOKENS_STATE = {
 export const tokens = (state = DEFAULT_TOKENS_STATE, action) => {
   switch (action.type) {
     case "TOKEN_1_LOADED":
-      console.log(action.token);
       return {
         ...state,
         loaded: true,
@@ -55,6 +54,7 @@ export const tokens = (state = DEFAULT_TOKENS_STATE, action) => {
         contracts: [...state.contracts, action.token],
         symbols: [...state.symbols, action.symbol],
       };
+
     case "TOKEN_2_BALANCE_LOADED":
       return {
         ...state,
@@ -82,6 +82,19 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         ...state,
         loaded: true,
         contract: action.exchange,
+      };
+
+    // ------------------------------------------------------------------------------
+    // BALANCE CASES
+    case "EXCHANGE_TOKEN_1_BALANCE_LOADED":
+      return {
+        ...state,
+        balances: [action.balance],
+      };
+    case "EXCHANGE_TOKEN_2_BALANCE_LOADED":
+      return {
+        ...state,
+        balances: [...state.balances, action.balance],
       };
 
     // ------------------------------------------------------------------------------
@@ -117,19 +130,6 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           isError: true,
         },
         transferInProgress: false,
-      };
-
-    // ------------------------------------------------------------------------------
-    // BALANCE CASES
-    case "EXCHANGE_TOKEN_1_BALANCE_LOADED":
-      return {
-        ...state,
-        balances: [action.balance],
-      };
-    case "EXCHANGE_TOKEN_2_BALANCE_LOADED":
-      return {
-        ...state,
-        balances: [...state.balances, action.balance],
       };
 
     default:
